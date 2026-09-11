@@ -56,7 +56,7 @@ class FuelCapture : public Component {
     );
   }
 
-  void on_image(esphome::esp32_camera::CameraImage *img) {
+  void on_image(esphome::camera::CameraImage *img) {
     digitalWrite(pin_, LOW);
     busy_ = false;
 
