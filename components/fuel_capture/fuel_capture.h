@@ -3,7 +3,7 @@
 #include "esphome.h"
 #include "esphome/components/esp32_camera/esp32_camera.h"
 
-namespace fuel_capture {
+namespace esphome::fuel_capture {
 
 class FuelCapture : public Component {
  public:
@@ -23,6 +23,8 @@ class FuelCapture : public Component {
     }
   }
 
+  void dump_config() override;
+  
  protected:
   esphome::esp32_camera::ESP32Camera *cam_;
   uint8_t pin_;
