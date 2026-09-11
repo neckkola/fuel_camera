@@ -13,7 +13,8 @@ CONFIG_SCHEMA = cv.Schema({
 })
 
 def to_code(config):
-    cam = yield cg.get_variable(config["camera_id"])
+    cam = await cg.get_variable(config["camera_id"])
     var = cg.new_Pvariable(config[CONF_ID], cam, config[CONF_PIN])
-    yield var
-    yield cg.register_component(var)
+
+    await var
+    await cg.register_component(var, config)
