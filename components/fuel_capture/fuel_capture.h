@@ -3,11 +3,15 @@
 #include "esphome.h"
 #include "esphome/components/esp32_camera/esp32_camera.h"
 
-namespace esphome::fuel_capture {
+namespace fuel_capture {
 
-class FuelCapture : public Component {
+using esphome::esp32_camera::ESP32Camera;
+using esphome::camera::CameraImage;
+using esphome::camera::CameraImageCallback;
+
+class FuelCapture : public esphome::Component, public CameraImageCallback {
  public:
-  FuelCapture(esphome::esp32_camera::ESP32Camera *cam, uint8_t pin)
+  FuelCapture(ESP32Camera *cam, uint8_t pin)
       : cam_(cam), pin_(pin) {}
 
   void setup() override {
@@ -23,10 +27,25 @@ class FuelCapture : public Component {
     }
   }
 
-  void dump_config() override;
-  
+  // REQUIRED by CameraImageCallback
+  void on_image(CameraImage *image) override {
+    digitalWrite(pin_, LOW);
+    busy_ = false;
+
+    if (!image) {
+      ESP_LOGW("fuel_capture", "Image capture failed");
+      return;
+    }
+
+    uint64_t sum = 0;
+    for (auto b : image->data) sum += b;
+    float avg = float(sum) / image->data.size();
+
+    ESP_LOGI("fuel_capture", "Brightness = %.2f", avg);
+  }
+
  protected:
-  esphome::esp32_camera::ESP32Camera *cam_;
+  ESP32Camera *cam_;
   uint8_t pin_;
   uint32_t last_{0};
   bool busy_{false};
@@ -39,7 +58,8 @@ class FuelCapture : public Component {
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    self->cam_->request_image(self, &FuelCapture::on_image);
+    // NEW API: only pass the callback object
+    self->cam_->request_image(self);
 
     vTaskDelete(nullptr);
   }
@@ -54,22 +74,6 @@ class FuelCapture : public Component {
         nullptr,
         1
     );
-  }
-
-  void on_image(esphome::camera::CameraImage *img) {
-    digitalWrite(pin_, LOW);
-    busy_ = false;
-
-    if (!img) {
-      ESP_LOGW("fuel_capture", "Image capture failed");
-      return;
-    }
-
-    uint64_t sum = 0;
-    for (auto b : img->data) sum += b;
-    float avg = float(sum) / img->data.size();
-
-    ESP_LOGI("fuel_capture", "Brightness = %.2f", avg);
   }
 };
 
