@@ -2,8 +2,6 @@
 
 #include "esphome.h"
 #include "esphome/components/esp32_camera/esp32_camera.h"
-#include "esphome/components/camera/camera_listener.h"
-#include "esphome/components/camera/camera_image.h"
 
 namespace fuel_capture {
 
