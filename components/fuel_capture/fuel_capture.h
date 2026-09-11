@@ -7,9 +7,9 @@ namespace fuel_capture {
 
 using esphome::esp32_camera::ESP32Camera;
 using esphome::camera::CameraImage;
-using esphome::camera::CameraImageCallback;
+using esphome::camera::CameraRequester;
 
-class FuelCapture : public esphome::Component, public CameraImageCallback {
+class FuelCapture : public esphome::Component, public CameraRequester {
  public:
   FuelCapture(ESP32Camera *cam, uint8_t pin)
       : cam_(cam), pin_(pin) {}
@@ -27,8 +27,8 @@ class FuelCapture : public esphome::Component, public CameraImageCallback {
     }
   }
 
-  // REQUIRED by CameraImageCallback
-  void on_image(CameraImage *image) override {
+  // REQUIRED by CameraRequester
+  void on_camera_image(CameraImage *image) override {
     digitalWrite(pin_, LOW);
     busy_ = false;
 
@@ -37,9 +37,10 @@ class FuelCapture : public esphome::Component, public CameraImageCallback {
       return;
     }
 
+    // CameraImage::buffer is the JPEG data
     uint64_t sum = 0;
-    for (auto b : image->data) sum += b;
-    float avg = float(sum) / image->data.size();
+    for (auto b : image->buffer) sum += b;
+    float avg = float(sum) / image->buffer.size();
 
     ESP_LOGI("fuel_capture", "Brightness = %.2f", avg);
   }
@@ -58,8 +59,8 @@ class FuelCapture : public esphome::Component, public CameraImageCallback {
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // NEW API: only pass the callback object
-    self->cam_->request_image(self);
+    // NEW API: pass CameraRequester
+    self->cam_->request_image(*self);
 
     vTaskDelete(nullptr);
   }
