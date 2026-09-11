@@ -2,14 +2,16 @@
 
 #include "esphome.h"
 #include "esphome/components/esp32_camera/esp32_camera.h"
+#include "esphome/components/camera/camera_listener.h"
+#include "esphome/components/camera/camera_image.h"
 
 namespace fuel_capture {
 
 using esphome::esp32_camera::ESP32Camera;
 using esphome::camera::CameraImage;
-using esphome::camera::CameraRequester;
+using esphome::camera::CameraListener;
 
-class FuelCapture : public esphome::Component, public CameraRequester {
+class FuelCapture : public esphome::Component, public CameraListener {
  public:
   FuelCapture(ESP32Camera *cam, uint8_t pin)
       : cam_(cam), pin_(pin) {}
@@ -17,6 +19,9 @@ class FuelCapture : public esphome::Component, public CameraRequester {
   void setup() override {
     pinMode(pin_, OUTPUT);
     digitalWrite(pin_, LOW);
+
+    // Register as listener
+    cam_->add_listener(this);
   }
 
   void loop() override {
@@ -27,7 +32,7 @@ class FuelCapture : public esphome::Component, public CameraRequester {
     }
   }
 
-  // REQUIRED by CameraRequester
+  // REQUIRED by CameraListener
   void on_camera_image(CameraImage *image) override {
     digitalWrite(pin_, LOW);
     busy_ = false;
@@ -37,10 +42,11 @@ class FuelCapture : public esphome::Component, public CameraRequester {
       return;
     }
 
-    // CameraImage::buffer is the JPEG data
+    const auto &bytes = image->get_data();
+
     uint64_t sum = 0;
-    for (auto b : image->buffer) sum += b;
-    float avg = float(sum) / image->buffer.size();
+    for (auto b : bytes) sum += b;
+    float avg = float(sum) / bytes.size();
 
     ESP_LOGI("fuel_capture", "Brightness = %.2f", avg);
   }
@@ -59,8 +65,8 @@ class FuelCapture : public esphome::Component, public CameraRequester {
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // NEW API: pass CameraRequester
-    self->cam_->request_image(*self);
+    // NEW API: no arguments
+    self->cam_->request_image();
 
     vTaskDelete(nullptr);
   }
