@@ -2,6 +2,7 @@
 
 #include "esphome.h"
 #include "esphome/components/esp32_camera/esp32_camera.h"
+#include "esphome/components/camera/camera.h"
 
 namespace fuel_capture {
 
@@ -41,7 +42,6 @@ class FuelCapture : public esphome::Component {
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    // CORRECT: request_image takes a lambda
     self->cam_->request_image([self](CameraImage *image) {
       self->handle_image(image);
     });
@@ -75,9 +75,9 @@ class FuelCapture : public esphome::Component {
     size_t size = 0;
 
     // These exist in some builds
-    if constexpr (requires(CameraImage img) { img.get_data(); }) {
-      data = image->get_data();
-      size = image->get_data_size();
+    if constexpr (requires(CameraImage img) { img.get_data_buffer(); }) {
+      data = image->get_data_buffer();
+      size = image->get_data_length();
     }
 
     // Fallback: log size only
