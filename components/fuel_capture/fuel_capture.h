@@ -20,6 +20,8 @@ class FuelCapture : public esphome::Component {
   void setup() override {
     pinMode(pin_, OUTPUT);
     digitalWrite(pin_, LOW);
+    
+    cam_->add_listener(&FuelCapture);
   }
 
   void loop() override {
@@ -37,6 +39,7 @@ class FuelCapture : public esphome::Component {
   uint8_t pin_;
   uint32_t last_{0};
   bool busy_{false};
+  bool registered_{false};
 
   static void task(void *param) {
     auto *self  = static_cast<FuelCapture *>(param);
