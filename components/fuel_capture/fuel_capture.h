@@ -22,9 +22,11 @@ class FuelCapture : public esphome::Component {
 
   void loop() override {
     uint32_t now = millis();
+    ESP_LOGI("fuel_capture", "In Fuel Loop.");
     if (!busy_ && now - last_ > 10000) {
       last_ = now;
       start_task();
+ 	  ESP_LOGI("fuel_capture", "Started Fuel Task.");
     }
   }
 
@@ -35,15 +37,12 @@ class FuelCapture : public esphome::Component {
   bool busy_{false};
 
   static void task(void *param) {
-    auto *self = static_cast<FuelCapture *>(param);
-
+    auto *self  = static_cast<FuelCapture *>(param);
     self->busy_ = true;
-    digitalWrite(self->pin_, HIGH);
 
+	digitalWrite(self->pin_, HIGH);
     vTaskDelay(pdMS_TO_TICKS(1000));
-
-			self->cam_->request_image(CameraRequester::IDLE);
-
+	self->cam_->request_image(CameraRequester::IDLE);
     vTaskDelete(nullptr);
   }
 
@@ -60,7 +59,8 @@ class FuelCapture : public esphome::Component {
   }
 
   void handle_image(CameraImage *image) {
-    digitalWrite(pin_, LOW);
+    ESP_LOGI("fuel_capture", "In Handle Image Fuel Loop.");
+	digitalWrite(pin_, LOW);
     busy_ = false;
 
     if (!image) {
