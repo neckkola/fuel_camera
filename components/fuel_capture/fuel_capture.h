@@ -21,7 +21,7 @@ class FuelCapture : public esphome::Component {
   }
 
   void loop() override {
-    uint32_t now = millis();
+    static uint32_t now = millis();
 
     if (!busy_ && now - last_ > 10000) {
       last_ = now;
