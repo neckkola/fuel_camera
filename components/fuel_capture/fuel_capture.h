@@ -4,6 +4,8 @@
 #include "esphome/components/esp32_camera/esp32_camera.h"
 #include "esphome/components/camera/camera.h"
 
+static uint32_t now = 0;
+
 namespace fuel_capture {
 
 using esphome::esp32_camera::ESP32Camera;
@@ -21,7 +23,7 @@ class FuelCapture : public esphome::Component {
   }
 
   void loop() override {
-    static uint32_t now = millis();
+    now = millis();
 
     if (!busy_ && now - last_ > 10000) {
       last_ = now;
