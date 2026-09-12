@@ -12,7 +12,7 @@ using esphome::esp32_camera::ESP32Camera;
 using esphome::camera::CameraImage;
 using esphome::camera::CameraRequester;
 
-class FuelCapture : public esphome::Component, public camera::CameraListener {
+class FuelCapture : public esphome::Component, public esphome::camera::CameraListener {
 public:
   FuelCapture(ESP32Camera *cam, uint8_t pin)
       : cam_(cam), pin_(pin) {}
