@@ -42,9 +42,7 @@ class FuelCapture : public esphome::Component {
 
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    self->cam_->request_image([self](CameraImage *image) {
-      self->handle_image(image);
-    });
+			self->cam_->request_image(CameraRequester::IDLE);
 
     vTaskDelete(nullptr);
   }
