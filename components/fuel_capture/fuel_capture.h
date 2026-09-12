@@ -22,7 +22,7 @@ class FuelCapture : public esphome::Component {
 
   void loop() override {
     uint32_t now = millis();
-    ESP_LOGI("fuel_capture", "In Fuel Loop.");
+
     if (!busy_ && now - last_ > 10000) {
       last_ = now;
       start_task();
