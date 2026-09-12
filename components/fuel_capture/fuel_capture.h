@@ -12,8 +12,8 @@ using esphome::esp32_camera::ESP32Camera;
 using esphome::camera::CameraImage;
 using esphome::camera::CameraRequester;
 
-class FuelCapture : public esphome::Component {
- public:
+class FuelCapture : public esphome::Component, public camera::CameraListener {
+public:
   FuelCapture(ESP32Camera *cam, uint8_t pin)
       : cam_(cam), pin_(pin) {}
 
@@ -21,7 +21,9 @@ class FuelCapture : public esphome::Component {
     pinMode(pin_, OUTPUT);
     digitalWrite(pin_, LOW);
     
-    cam_->add_listener(&FuelCapture);
+    camera::Camera::instance()->add_listener(this);
+    
+    //cam_->add_listener(&FuelCapture);
   }
 
   void loop() override {
