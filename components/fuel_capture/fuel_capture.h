@@ -63,9 +63,9 @@ class FuelCapture : public esphome::Component {
     );
   }
 
-  void handle_image(CameraImage *image) {
+  void on_camera_image(const std::shared_ptr<CameraImage> &image) {
     ESP_LOGI("fuel_capture", "In Handle Image Fuel Loop.");
-	digitalWrite(pin_, LOW);
+	  digitalWrite(pin_, LOW);
     busy_ = false;
 
     if (!image) {
