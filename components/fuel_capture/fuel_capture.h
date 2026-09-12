@@ -21,7 +21,7 @@ public:
     pinMode(pin_, OUTPUT);
     digitalWrite(pin_, LOW);
     
-    camera::Camera::instance()->add_listener(this);
+    cam_->add_listener(this);
     
     //cam_->add_listener(&FuelCapture);
   }
