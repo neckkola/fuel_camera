@@ -64,7 +64,7 @@ public:
     self->busy_ = true;
 
     digitalWrite(self->pin_, HIGH);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(2000));
     self->cam_->request_image(CameraRequester::IDLE);
     vTaskDelete(nullptr);
   }
@@ -111,7 +111,7 @@ public:
     if (reading < 0.0)   { reading = 0.0;   }
     if (reading > 100.0) { reading = 100.0; }
 
-    id(gauge_reading).publish_state(static_cast<double>(reading));
+    cam_->publish_state(static_cast<float>(reading));
     ESP_LOGI("fuel_capture", "Gauge reading published: %.1f%%.", reading);
   }
 };
