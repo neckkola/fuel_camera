@@ -100,7 +100,7 @@ public:
       ESP_LOGI(TAG, "Gauge reading published: %.1f%%.", reading);
     }
   }
-}
+};
 
 double CalculateReading(int needleAngle)
 {
