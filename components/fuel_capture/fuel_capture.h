@@ -12,6 +12,9 @@ using esphome::esp32_camera::ESP32Camera;
 using esphome::camera::CameraImage;
 using esphome::camera::CameraRequester;
 
+double CalculateReading(int needleAngle);
+int FindNeedle(const uint8_t *image, uint16_t width, uint16_t height, uint16_t cx, uint16_t cy);
+
 class FuelCapture : public esphome::Component, public esphome::camera::CameraListener {
 public:
   FuelCapture(ESP32Camera *cam, uint8_t pin)
@@ -22,8 +25,6 @@ public:
     digitalWrite(pin_, LOW);
     
     cam_->add_listener(this);
-    
-    //cam_->add_listener(&FuelCapture);
   }
 
   void loop() override {
