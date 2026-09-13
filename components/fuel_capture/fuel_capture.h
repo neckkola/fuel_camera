@@ -4,6 +4,21 @@
 #include "esphome/components/esp32_camera/esp32_camera.h"
 #include "esphome/components/camera/camera.h"
 
+struct CalibrationData {
+  double angle;
+  double percentage;
+};
+
+struct NeedleData {
+  double angle;
+  double radius;
+};
+
+struct ScoreData {
+    int angle;
+    uint32_t score;
+};
+
 static uint32_t now = 0;
 
 namespace fuel_capture {
@@ -91,13 +106,13 @@ public:
     ESP_LOGI("fuel_capture", "FindNeedle completed. Angle = %d degrees.", needle_angle);
 
     double reading = fuel_capture::CalculateReading(needle_angle);
-    ESP_LOGI(TAG, "CalculateReading completed. Reading = %.2f%%.", reading);
+    ESP_LOGI("fuel_capture", "CalculateReading completed. Reading = %.2f%%.", reading);
 
     if (reading < 0.0)   { reading = 0.0;   }
     if (reading > 100.0) { reading = 100.0; }
 
     //this->reading_sensor_->publish_state(static_cast<float>(reading));
-    ESP_LOGI(TAG, "Gauge reading published: %.1f%%.", reading);
+    ESP_LOGI("fuel_capture", "Gauge reading published: %.1f%%.", reading);
   }
 };
 
