@@ -111,7 +111,7 @@ public:
     if (reading < 0.0)   { reading = 0.0;   }
     if (reading > 100.0) { reading = 100.0; }
 
-    //this->reading_sensor_->publish_state(static_cast<float>(reading));
+    id(gauge_reading).publish_state(static_cast<double>(reading));
     ESP_LOGI("fuel_capture", "Gauge reading published: %.1f%%.", reading);
   }
 };
