@@ -86,19 +86,17 @@ public:
     // Fallback: log size only
     ESP_LOGI("fuel_capture", "Image received and FindNeedle started. Size: %d bytes", length);
 
-    int needle_angle = FuelCapture::FindNeedle(data, 640, 480, 350, 272);
+    int needle_angle = fuel_capture::FindNeedle(data, 640, 480, 350, 272);
     ESP_LOGI("fuel_capture", "FindNeedle completed. Angle = %d degrees.", needle_angle);
 
-    double reading = FuelCapture::CalculateReading(needle_angle);
+    double reading = fuel_capture::CalculateReading(needle_angle);
     ESP_LOGI(TAG, "CalculateReading completed. Reading = %.2f%%.", reading);
 
     if (reading < 0.0)   { reading = 0.0;   }
     if (reading > 100.0) { reading = 100.0; }
 
-    if (this->reading_sensor_ != nullptr) {
-      this->reading_sensor_->publish_state(static_cast<float>(reading));
-      ESP_LOGI(TAG, "Gauge reading published: %.1f%%.", reading);
-    }
+    //this->reading_sensor_->publish_state(static_cast<float>(reading));
+    ESP_LOGI(TAG, "Gauge reading published: %.1f%%.", reading);
   }
 };
 
