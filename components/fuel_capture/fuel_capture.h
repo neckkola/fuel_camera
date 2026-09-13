@@ -29,7 +29,7 @@ public:
   void loop() override {
     now = millis();
 
-    if (!busy_ && now - last_ > 10000) {
+    if (!busy_ && now - last_ > 60000) {
       last_ = now;
       start_task();
  	  ESP_LOGI("fuel_capture", "Started Fuel Task.");
@@ -47,9 +47,9 @@ public:
     auto *self  = static_cast<FuelCapture *>(param);
     self->busy_ = true;
 
-	digitalWrite(self->pin_, HIGH);
+    digitalWrite(self->pin_, HIGH);
     vTaskDelay(pdMS_TO_TICKS(1000));
-	self->cam_->request_image(CameraRequester::IDLE);
+    self->cam_->request_image(CameraRequester::IDLE);
     vTaskDelete(nullptr);
   }
 
